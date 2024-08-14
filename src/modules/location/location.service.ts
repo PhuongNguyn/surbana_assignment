@@ -4,7 +4,6 @@ import { LocationEntity } from './localtion.entity';
 import { Repository } from 'typeorm';
 import { CreateLocationDTO } from './DTO/createLocation.dto';
 import { UpdateLocationDTO } from './DTO/updateLocation.dto';
-
 @Injectable()
 export class LocationService {
   constructor(
@@ -12,12 +11,23 @@ export class LocationService {
     private readonly locationEntity: Repository<LocationEntity>,
   ) {}
 
+  async getChildLocationByLocationPath(locationPath: string) {
+    const location = await this.locationEntity.query(`
+      SELECT *
+      FROM locations
+      WHERE path <@ '${locationPath}'
+      ORDER BY path DESC
+    `);
+
+    return location;
+  }
+
   async createLocation(data: CreateLocationDTO) {
-    const newLocation = this.locationEntity.create({
+    const newLocation = await this.locationEntity.save({
       ...data,
       path: data.location_number?.replaceAll('-', '.'),
     });
-    return this.locationEntity.save(newLocation);
+    return newLocation;
   }
 
   async updateLocation(id: string, locationData: UpdateLocationDTO) {

@@ -19,6 +19,8 @@ import { APP_FILTER } from '@nestjs/core';
       database: process.env.DB_NAME,
       entities: [LocationEntity],
       synchronize: true,
+      migrations: ['dist/src/migrations/*{.ts,.js}'],
+      migrationsRun: true,
     }),
     LocationModule,
     LoggerModule,

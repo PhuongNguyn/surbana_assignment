@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsNumber,
@@ -9,23 +10,24 @@ import {
 export class UpdateLocationDTO {
   @IsNotEmpty()
   @IsString()
+  @ApiProperty()
   @MaxLength(32)
-  @Matches(/^[a-zA-Z0-9]{4,10}$/, {
-    message: 'Building cannot contain special characters',
-  })
   building: string;
 
   @IsNotEmpty()
   @IsString()
+  @ApiProperty()
   location_name: string;
 
   @IsNotEmpty()
   @IsString()
-  @Matches(/^[a-zA-Z0-9]{4,10}$/, {
-    message: 'Location number cannot contain special characters',
+  @ApiProperty({
+    description:
+      "Location Number should contain it's parent location and it's location name and seperate by '-' (ex: 'A-breakroom-bathroom')",
   })
   location_number: string;
 
   @IsNumber()
+  @ApiProperty()
   area: number;
 }

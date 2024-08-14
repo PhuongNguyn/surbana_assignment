@@ -1,7 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn, Tree } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'localtions' })
-@Tree('closure-table')
+@Entity({ name: 'locations' })
 export class LocationEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -12,7 +11,7 @@ export class LocationEntity {
   @Column({ type: String, nullable: false })
   location_name: string;
 
-  @Column({ type: String, nullable: false })
+  @Column({ type: String, nullable: false, unique: true })
   location_number: string;
 
   @Column({ type: Number, nullable: false })

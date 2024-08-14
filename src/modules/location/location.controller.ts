@@ -2,7 +2,9 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { CreateLocationDTO } from './DTO/createLocation.dto';
 import { LocationService } from './location.service';
 import { UpdateLocationDTO } from './DTO/updateLocation.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Location')
 @Controller('location')
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
@@ -11,6 +13,21 @@ export class LocationController {
   async getLocationFromRoot() {
     return {
       message: 'Hello',
+    };
+  }
+
+  @Get('/get-child-location-by-location-number/:location_number')
+  async getChildLocationByLocationNumber(
+    @Param('location_number') location_number: string,
+  ) {
+    const searchPath = `${location_number.replace(/\-/g, '.')}`;
+
+    console.log(searchPath);
+    const result =
+      await this.locationService.getChildLocationByLocationPath(searchPath);
+
+    return {
+      locations: result,
     };
   }
 
