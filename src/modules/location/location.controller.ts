@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { CreateLocationDTO } from './DTO/createLocation.dto';
 import { LocationService } from './location.service';
 import { UpdateLocationDTO } from './DTO/updateLocation.dto';
@@ -8,6 +16,18 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 @Controller('location')
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
+
+  @Get('/get-all-locations')
+  @ApiOperation({
+    summary: 'This API can be used to get all of the location',
+  })
+  async getAllLocation() {
+    const result = await this.locationService.getAllLocations();
+
+    return {
+      locations: result,
+    };
+  }
 
   @Get('/get-child-location-by-location-number/:location_number')
   @ApiOperation({
@@ -47,6 +67,17 @@ export class LocationController {
     @Body() body: UpdateLocationDTO,
   ) {
     const result = await this.locationService.updateLocation(id, body);
+
+    return result;
+  }
+
+  @Delete(':id')
+  @ApiOperation({
+    summary:
+      "This API can be used to delete location, and also delete it's child location",
+  })
+  async deleteLocation(@Param('id') id: string) {
+    const result = await this.locationService.deleteLocation(id);
 
     return result;
   }
