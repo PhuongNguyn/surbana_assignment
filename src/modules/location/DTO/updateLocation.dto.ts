@@ -1,33 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  Matches,
-  MaxLength,
-} from 'class-validator';
+import { IsNumber, IsString, MaxLength, IsOptional } from 'class-validator';
 
 export class UpdateLocationDTO {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @MaxLength(32)
   building: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ required: false })
   location_name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @ApiProperty({
     description:
       "Location Number should contain it's parent location and it's location name and seperate by '-' (ex: 'A-breakroom-bathroom')",
+    required: false,
   })
   location_number: string;
 
+  @IsOptional()
   @IsNumber()
-  @ApiProperty()
+  @ApiProperty({ required: false })
   area: number;
 }

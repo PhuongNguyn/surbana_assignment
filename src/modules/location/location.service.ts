@@ -35,10 +35,57 @@ export class LocationService {
     if (!location) {
       throw new Error('Location not found');
     }
+    const updatedLocation = await this.locationEntity
+      .createQueryBuilder()
+      .update({
+        ...location,
+        ...locationData,
+        path: locationData.location_number
+          ? locationData.location_number.replaceAll('-', '.')
+          : location.path,
+      })
+      .where('locations.id = :id', { id: location.id })
+      .returning(['id', 'location_number', 'location_name'])
+      .execute();
+    if (
+      locationData.location_number &&
+      location.location_number != locationData.location_number
+    ) {
+      const locations = await this.getChildLocationByLocationPath(
+        location.path,
+      );
+      // The locations return on the above function will contain also the parent location, so we have to filter it.
+      const childLocations = locations.filter((item) => item.id != location.id);
+      // Update the location_number and the ltree path of child location
+      const updatedChildLocations = await Promise.all(
+        childLocations.map(async (item) => {
+          const updateLocationNumber = item.location_number.replace(
+            item.location_number,
+            updatedLocation.raw[0]?.location_number,
+          );
+          const childLocationToUpdate = {
+            ...item,
+            location_number: updateLocationNumber,
+            path: updateLocationNumber.replaceAll('-', '.'),
+          };
+          const updatedChildLocation = await this.locationEntity
+            .createQueryBuilder()
+            .update({ ...childLocationToUpdate })
+            .where('locations.id = :id', { id: item.id })
+            .returning(['id', 'location_number', 'location_name'])
+            .execute();
+          return { updatedChildLocation: updatedChildLocation.raw };
+        }),
+      );
 
-    return this.locationEntity.save({
-      ...location,
-      path: locationData.location_number.replaceAll('-', '.'),
-    });
+      return {
+        updatedLocation: updatedLocation.raw,
+        updatedChildLocation: updatedChildLocations,
+      };
+    }
+    return {
+      updatedLocation: updatedLocation.raw,
+      updatedChildLocation: [],
+    };
   }
 }
