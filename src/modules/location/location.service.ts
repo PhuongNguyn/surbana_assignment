@@ -76,6 +76,7 @@ export class LocationService {
       );
       // The locations return on the above function will contain also the parent location, so we have to filter it.
       const childLocations = locations.filter((item) => item.id != id);
+
       // Update the location_number and the ltree path of child location
       const updatedChildLocations = await Promise.all(
         childLocations.map(async (item) => {
@@ -83,17 +84,20 @@ export class LocationService {
             item.location_number,
             updatedLocation.raw[0]?.location_number,
           );
+
           const childLocationToUpdate = {
             ...item,
             location_number: updateLocationNumber,
             path: updateLocationNumber.replaceAll('-', '.'),
           };
+
           const updatedChildLocation = await this.locationEntity
             .createQueryBuilder()
             .update({ ...childLocationToUpdate })
             .where('locations.id = :id', { id: item.id })
             .returning(['id', 'location_number', 'location_name'])
             .execute();
+
           return { updatedChildLocation: updatedChildLocation.raw };
         }),
       );
@@ -112,6 +116,7 @@ export class LocationService {
   @Transactional()
   async deleteLocation(id: string) {
     const location = await this.locationEntity.findOneBy({ id });
+
     if (!location) {
       throw new Error('Location not found');
     }
@@ -120,6 +125,7 @@ export class LocationService {
     if (deleteLocation.affected > 0) {
       const childLocation =
         await this.getChildLocationByLocationPathWithoutParent(location.path);
+
       const deletedChildLocation = await Promise.all(
         childLocation.map(async (item) => {
           await this.locationEntity.delete({ id: item.id });
@@ -127,6 +133,7 @@ export class LocationService {
           return id;
         }),
       );
+
       return {
         deletedLocation: [id],
         deletedChildLocation: deletedChildLocation,

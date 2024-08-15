@@ -39,7 +39,6 @@ export class LocationController {
   ) {
     const searchPath = `${location_number.replace(/\-/g, '.')}`;
 
-    console.log(searchPath);
     const result =
       await this.locationService.getChildLocationByLocationPath(searchPath);
 
