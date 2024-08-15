@@ -71,17 +71,14 @@ export class LocationService {
       locationData.location_number &&
       location.location_number != locationData.location_number
     ) {
-      const locations = await this.getChildLocationByLocationPath(
-        location.path,
-      );
-      // The locations return on the above function will contain also the parent location, so we have to filter it.
-      const childLocations = locations.filter((item) => item.id != id);
+      const childLocations =
+        await this.getChildLocationByLocationPathWithoutParent(location.path);
 
       // Update the location_number and the ltree path of child location
       const updatedChildLocations = await Promise.all(
         childLocations.map(async (item) => {
           const updateLocationNumber = item.location_number.replace(
-            item.location_number,
+            location.location_number,
             updatedLocation.raw[0]?.location_number,
           );
 
