@@ -95,7 +95,7 @@ export class LocationService {
             .returning(['id', 'location_number', 'location_name'])
             .execute();
 
-          return { updatedChildLocation: updatedChildLocation.raw };
+          return updatedChildLocation.raw?.[0];
         }),
       );
 
