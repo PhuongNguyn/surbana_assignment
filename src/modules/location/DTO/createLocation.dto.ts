@@ -6,6 +6,7 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
+import { IsLocationNumerExist } from '../customDecorator/isExistLocation';
 
 export class CreateLocationDTO {
   @ApiProperty()
@@ -25,6 +26,7 @@ export class CreateLocationDTO {
   })
   @IsNotEmpty()
   @IsString()
+  @IsLocationNumerExist()
   location_number: string;
 
   @ApiProperty()

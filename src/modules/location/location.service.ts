@@ -18,6 +18,10 @@ export class LocationService {
     return locations;
   }
 
+  async getLocationByLocationNumber(location_number: string) {
+    return this.locationEntity.findOne({ where: { location_number } });
+  }
+
   async getChildLocationByLocationPath(locationPath: string) {
     const location = await this.locationEntity.query(`
       SELECT *
